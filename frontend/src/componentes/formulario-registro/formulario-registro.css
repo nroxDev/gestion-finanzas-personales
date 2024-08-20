@@ -1,0 +1,51 @@
+.contenedor-formulario-registro {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: #F5F5F5;
+}
+
+
+.formulario-registro {
+    display: flex;
+    flex-direction: column;
+    width: 480px;
+    padding: 16px;
+    background-color: white;
+    border: solid 1px #CCCCCC;
+
+}
+
+.input-formulario-registro {
+    margin: 8px;
+}
+
+.enviar-formulario-registro {
+    width: 200px;
+    align-self: center;
+    margin: 8px;
+    height: 32px;
+    background-color: #28A745;
+    border: none;
+
+}
+
+/*para pantallas moviles */
+@media(max-width: 768px) {
+    .formulario-registro {
+        width: 100%;
+        background-color: grey;
+    }
+}
+
+
+/*para tablets*/
+@media(min-width:768px)and (max-width:1023px) {
+    .formulario-registro {
+        width: 600px;
+        background-color: aqua;
+    }
+}
