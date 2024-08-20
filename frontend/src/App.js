@@ -4,9 +4,11 @@ import FormularioRegistro from './componentes/formulario-registro/formulario-reg
 function App() {
   return (
     <div className="App">
-  
-     <FormularioRegistro/>
-  
+
+      <FormularioRegistro alTenerDatosCompletos={(datos) => {
+        console.log('----------> datos', datos)
+      }} />
+
     </div>
   );
 }
