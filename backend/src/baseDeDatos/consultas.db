@@ -1,0 +1,41 @@
+-- Crear la base de datos con conjunto de caracteres UTF-8
+CREATE DATABASE IF NOT EXISTS finanzas_personales
+    CHARACTER SET utf8
+    COLLATE utf8_general_ci;
+USE finanzas_personales;
+
+-- Crear la tabla `usuarios`
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    primer_apellido VARCHAR(100) NOT NULL,
+    segundo_apellido VARCHAR(100),
+    fecha_nacimiento DATE,
+    correo_electronico VARCHAR(255) UNIQUE NOT NULL,
+    sexo CHAR(1) CHECK (sexo IN ('M', 'F')),
+    contrasena VARCHAR(255) NOT NULL
+);
+
+-- Crear la tabla `categorias`
+CREATE TABLE IF NOT EXISTS categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    icono VARCHAR(100),
+    fk_id_usuario INT,
+    FOREIGN KEY (fk_id_usuario) REFERENCES usuarios(id)
+    ON DELETE CASCADE
+);
+
+-- Crear la tabla `gastos`
+CREATE TABLE IF NOT EXISTS gastos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    descripcion TEXT NOT NULL,
+    importe DECIMAL(10, 2) NOT NULL,
+    fecha DATE NOT NULL,
+    fk_id_usuario INT,
+    fk_id_categoria INT,
+    FOREIGN KEY (fk_id_usuario) REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+    FOREIGN KEY (fk_id_categoria) REFERENCES categorias(id)
+    ON DELETE CASCADE
+);
