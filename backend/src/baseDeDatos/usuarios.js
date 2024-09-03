@@ -27,7 +27,7 @@ async function borrarUsuario(id) {
 
 }
 
-async function actualizarUsuario(id, { nombre, primerApellido, segundoApellido, fechaNacimiento, sexo, correo, contrasena }) {
+async function actualizarUsuario({ id, nombre, primerApellido, segundoApellido, fechaNacimiento, sexo, correo, contrasena }) {
     let [resultado] = await conexion.query(
         `UPDATE usuarios 
          SET nombre = ?, primer_apellido = ?, segundo_apellido = ?, fecha_nacimiento = ?, sexo = ?, correo_electronico = ?, contrasena = ?
