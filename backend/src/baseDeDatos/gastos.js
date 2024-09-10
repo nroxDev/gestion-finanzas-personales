@@ -1,6 +1,5 @@
 const { conexion } = require("./conexion");
 
-
 async function crearGastos({ descripcion, importe, fecha, fkIdUsuario, fkIdCategoria }) {
     let [resultado] = await conexion.query("INSERT INTO gastos (descripcion, importe,fecha, fk_id_usuario, fk_id_categoria) VALUES (?, ?,?,?,?)", [descripcion, importe, fecha, fkIdUsuario, fkIdCategoria]);
     return resultado;
