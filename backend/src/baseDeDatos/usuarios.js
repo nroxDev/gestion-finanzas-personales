@@ -20,7 +20,6 @@ async function obtenerUsuarios() {
     return resultado;
 }
 
-
 async function borrarUsuario(id) {
     let [resultado] = await conexion.query("DELETE FROM usuarios WHERE id = ?", [id]);
     return resultado;
