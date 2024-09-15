@@ -12,7 +12,6 @@ async function crearUsuario(peticion, respuesta) {
             let resultado = await usuariosModelo.crearUsuario(datos);
             respuesta.status(201).send(resultado)
         } catch (e) {
-            console.log(e)
             respuesta.status(400).send({ error: "El correo electronico que quiere usar ya existe." })
         }
     } else {
