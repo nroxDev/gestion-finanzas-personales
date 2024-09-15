@@ -1,5 +1,6 @@
 const usuariosModelo = require('../baseDeDatos/usuarios');
 const usuarioValidaciones = require('../validaciones/usuarios');
+const seguridadUtilidades = require('../utilidades/seguridad');
 
 async function crearUsuario(peticion, respuesta) {
     let datos = peticion.body;
@@ -7,6 +8,7 @@ async function crearUsuario(peticion, respuesta) {
 
     if (error === null) {
         try {
+            datos.contrasena = seguridadUtilidades.encriptar(datos.contrasena);
             let resultado = await usuariosModelo.crearUsuario(datos);
             respuesta.status(201).send(resultado)
         } catch (e) {
