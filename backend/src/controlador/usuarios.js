@@ -3,6 +3,7 @@ const usuarioValidaciones = require('../validaciones/usuarios');
 const seguridadUtilidades = require('../utilidades/seguridad');
 
 async function crearUsuario(peticion, respuesta) {
+    console.log('****************************************', peticion.body)
     let datos = peticion.body;
     let error = usuarioValidaciones.validarUsuario(datos);
 
@@ -12,7 +13,9 @@ async function crearUsuario(peticion, respuesta) {
             let resultado = await usuariosModelo.crearUsuario(datos);
             respuesta.status(201).send(resultado)
         } catch (e) {
-            respuesta.status(400).send({ error: "El correo electronico que quiere usar ya existe." })
+            console.log(e);
+            
+            respuesta.status(400).send({ error: "El correo electronico que quiere usar ya existe."})
         }
     } else {
         respuesta.status(400).send({ error: error })
