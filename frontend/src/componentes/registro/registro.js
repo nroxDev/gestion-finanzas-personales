@@ -16,7 +16,7 @@ function Registro() {
     let [contrasenaRepetida, darContrasenaRepetida] = useState("");
     let navegar = useNavigate();
 
-    return <Stack direction="column" alignItems="center" justifyContent="center" spacing={2} sx={{ height: "100vh", width: "100vw" }} padding="16pxpx">
+    return <Stack direction="column" alignItems="center" justifyContent="center" spacing={2} sx={{ height: "100vh", width: "100vw" }} padding="16px">
         <Card variant="elevation" className="pagina-registro">
             <Stack direction="column" padding="16px" minWidth="504px">
                 <Typography component="h1" variant="h4">Registro</Typography>
