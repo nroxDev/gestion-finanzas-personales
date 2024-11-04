@@ -8,3 +8,10 @@ El backend corre en el puerto 200, para ser ejecutado:
 
 1. Entrar en la carpeta de backend
 2. Ejecutar `node ./src/servidor/index.js`
+
+# Frontend 
+
+El frontend corre en el puerto 8080
+
+1. Entrar en la carpeta de frontend
+2. Ejecutar `npm run serve`
