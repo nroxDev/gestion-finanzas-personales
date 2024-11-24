@@ -2,13 +2,17 @@
     <div>
         <p>{{ texto }}</p>
 
-        {{ opcion1 }} <input type="checkbox">
-        
-        {{ opcion2 }}<input type="checkbox">
+        {{ opcion1 }} 
+        <input type="checkbox" :checked="seleccionado === opcion1" @change="handleChange(opcion1)">
+
+        {{ opcion2 }} 
+        <input type="checkbox" :checked="seleccionado === opcion2" @change="handleChange(opcion2)">
     </div>
 </template>
 
 <script>
+import { ref } from 'vue';
+
 export default {
     name: "CheckboxOpciones",
     props: {
@@ -16,7 +20,25 @@ export default {
         opcion1: String,
         opcion2: String,
     },
+    setup() {
+        const seleccionado = ref(null);
+
+        const handleChange = (opcion) => {
+            if (seleccionado.value === opcion) {
+                seleccionado.value = null;
+            } else {
+                seleccionado.value = opcion;
+            }
+        };
+
+        return {
+            seleccionado,
+            handleChange,
+        };
+    }
 }
 </script>
 
-<style></style>
+<style>
+/* Agrega estilos si es necesario */
+</style>

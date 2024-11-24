@@ -1,7 +1,8 @@
 <template>
     <div class="contenedor">
         <label class="texto">{{ texto }}</label>
-        <input class="input" type="text">
+        <input class="input" @input="validar" :type="tipo">
+        <span class="error" v-if="tieneError">{{ mensajeDeError }}</span>
     </div>
 </template>
 
@@ -33,14 +34,45 @@
     flex-direction: column;
     padding: 16px;
 }
+
+.error {
+    color: red;
+}
 </style>
 
 
 <script>
+import { ref } from 'vue';
+
 export default {
     name: "InputTexto",
     props: {
+        tipo: String,
         texto: String,
+        mensajeDeError: String,
+        patron: RegExp,
+    },
+    setup: function (props) {
+        console.log(props)
+        let tieneError = ref(false)
+
+        function validar(evento) {
+            if (props.patron.test(evento.target.value)) {
+                tieneError.value = false;
+            } else {
+                tieneError.value = true;
+            }
+        }
+
+
+
+        return {
+            tieneError,
+            validar
+        }
+
+
+
     }
 }
 
