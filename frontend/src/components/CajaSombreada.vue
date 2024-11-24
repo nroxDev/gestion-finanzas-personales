@@ -14,6 +14,8 @@ export default {
 
 <style>
 .caja-sombreada {
+  display: flex;
+  flex-direction: column;
   background-color: #ffffff;
   border-radius: 24px;
   box-shadow: 2px 0px 10px rgba(3,3,3,0.1);

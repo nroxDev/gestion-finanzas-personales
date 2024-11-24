@@ -1,7 +1,7 @@
 <template>
     <CajaSombreada>
+    <div class="formularo-registro">
         <h1>Formulario de registro</h1>
-
         <InputTexto texto="Nombre de usuario" />
         <InputTexto texto="Primer Apellido" />
         <InputTexto texto="Segundo Apellido" />
@@ -11,10 +11,8 @@
         <InputTexto texto="Contraseña" />
         <InputTexto texto="Repetir contraseña" />
         <BotonFormulario texto="Registrarse" />
-
-
+    </div>
     </CajaSombreada>
-
 </template>
 <script>
 import CajaSombreada from './CajaSombreada.vue';
@@ -28,4 +26,11 @@ export default {
     components: { CajaSombreada, CheckboxOpcions, InputTexto, BotonFormulario }
 }
 </script>
-<style></style>
+<style>
+.formularo-registro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}  
+</style>
