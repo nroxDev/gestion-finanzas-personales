@@ -1,5 +1,5 @@
 <template>
-    <button class="boton-formulario">{{ texto }}</button>
+    <button  @click="onEnviar" class="boton-formulario">{{ texto }}</button>
 </template>
 
 
@@ -8,6 +8,7 @@ export default {
     name: 'BotonFormulario',
     props: {
         texto: String,
+        onEnviar: Function,
     }
 }
 </script>

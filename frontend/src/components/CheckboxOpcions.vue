@@ -19,14 +19,16 @@ export default {
         texto: String,
         opcion1: String,
         opcion2: String,
+        modelValue: String,
     },
-    setup() {
+    setup(props, { emit }) {
         const seleccionado = ref(null);
 
         const handleChange = (opcion) => {
             if (seleccionado.value === opcion) {
                 seleccionado.value = null;
             } else {
+                emit('update:modelValue', opcion);
                 seleccionado.value = opcion;
             }
         };

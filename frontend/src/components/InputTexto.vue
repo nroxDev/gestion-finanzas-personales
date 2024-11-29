@@ -1,7 +1,12 @@
 <template>
     <div class="contenedor">
         <label class="texto">{{ texto }}</label>
-        <input class="input" @input="validar" :type="tipo">
+        <input 
+        class="input" 
+        @input="validar" 
+        :type="tipo"
+        :value="modelValue"
+        >
         <span class="error" v-if="tieneError">{{ mensajeDeError }}</span>
     </div>
 </template>
@@ -51,12 +56,18 @@ export default {
         texto: String,
         mensajeDeError: String,
         patron: RegExp,
+        modelValue: {
+            type: String,
+            default: '',
+        }
     },
-    setup: function (props) {
+    setup: function (props, { emit }) {
         console.log(props)
         let tieneError = ref(false)
 
         function validar(evento) {
+            emit('update:modelValue', evento.target.value);
+
             if (props.patron.test(evento.target.value)) {
                 tieneError.value = false;
             } else {
