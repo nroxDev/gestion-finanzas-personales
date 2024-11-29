@@ -15,3 +15,9 @@ El frontend corre en el puerto 8080
 
 1. Entrar en la carpeta de frontend
 2. Ejecutar `npm run serve`
+
+# Entrega parcial
+
+Para esta entrega parcial, he completado el desarrollo del backend, así como las funcionalidades de registro y login. 
+
+Se piede ver el código en este repo: https://github.com/nroxDev/gestion-finanzas-personales
