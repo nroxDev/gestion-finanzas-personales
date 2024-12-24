@@ -2,8 +2,8 @@
   <Plantilla>
     <template #contenido>
       <div>
-        <h1>Página de Inicio</h1>
-        <p>Bienvenido a la página principal.</p>
+        <h1>Página de Gastos</h1>
+        <p>Bienvenido a la página gastos.</p>
       </div>
     </template>
   </Plantilla>
@@ -13,7 +13,7 @@
 import Plantilla from '@/components/PaginaPlantilla.vue';
 
 export default {
-  name: "PaginaInicio",
+  name: "PaginaGastos",
   components: { Plantilla },
 };
 </script>

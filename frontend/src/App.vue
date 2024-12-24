@@ -1,19 +1,25 @@
 <template>
-  <router-view/>
+  <router-view />
 </template>
 
 <style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  display: flex;
   height: 100vh;
   width: 100vw;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 nav {
