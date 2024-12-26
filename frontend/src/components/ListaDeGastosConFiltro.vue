@@ -58,7 +58,6 @@ export default {
             categoriaSeleccionada.value = categoria; // Actualiza la categoría seleccionada
         };
 
-        // Computed property para filtrar los gastos según la categoría seleccionada
         const gastosFiltrados = computed(() => {
             if (categoriaSeleccionada.value === 'Todas') {
                 return props.gastos;

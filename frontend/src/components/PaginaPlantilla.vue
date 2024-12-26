@@ -4,7 +4,8 @@
       <div class="encabezado-del-menu">
         <div class="titulo-del-menu">
           <span class="titulo">Mis Finanzas Personales</span>
-          <div class="icono-de-usuario" @click="irAlaPaginaDeUsuario"><i class="fas fa-user usuario-personalizado"></i></div>
+          <div class="icono-de-usuario" @click="irAlaPaginaDeUsuario"><i class="fas fa-user usuario-personalizado"></i>
+          </div>
         </div>
       </div>
 
@@ -13,17 +14,17 @@
           <BotonDeMenu label="Inicio" />
         </li>
         <li>
-          <BotonDeMenu label="Categorias" />
+          <BotonDeMenu label="Gastos" />
         </li>
         <li>
-          <BotonDeMenu label="Gastos" />
+          <BotonDeMenu label="Categorias" />
         </li>
         <li>
           <BotonDeMenu label="Estadisticas" />
         </li>
       </ul>
 
-      <button class="boton-salir" @click="salir" >Salir</button>
+      <button class="boton-salir" @click="salir">Salir</button>
     </aside>
 
     <main class="contenido">
