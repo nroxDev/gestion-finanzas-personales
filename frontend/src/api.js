@@ -1,5 +1,5 @@
 export function obtenerUsuario() {
-    const datos = sessionStorage.getItem('usuario');
+    const datos = localStorage.getItem('usuario');
 
     if (!datos) {
         throw new Error('El usuario no existe');
@@ -9,7 +9,7 @@ export function obtenerUsuario() {
 }
 
 export function obtenerTokenDeSeguridad() {
-    let token = sessionStorage.getItem('tokenDeSeguridad');
+    let token = localStorage.getItem('tokenDeSeguridad');
 
     if (!token) {
         throw new Error('No existe el token de seguridad');
