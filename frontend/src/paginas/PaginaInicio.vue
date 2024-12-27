@@ -45,7 +45,7 @@
             <div class="grafica-gastos-por-categoria">
               <h2 class="subtitulo">Análisis de gastos mensual</h2>
               <CajaSombreada>
-                <Bar :data="datosGrafica" :options="opcionesDeGrafica" />
+                <Pie :data="datosGrafica" :options="opcionesDeGrafica" />
               </CajaSombreada>
             </div>
           </div>
@@ -68,20 +68,30 @@ import ListaDeGastosConFiltro from '@/components/ListaDeGastosConFiltro.vue';
 import Plantilla from '@/components/PaginaPlantilla.vue';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import { onMounted, ref } from 'vue';
-import { Bar } from 'vue-chartjs';
+import { Pie } from 'vue-chartjs';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default {
   name: "PaginaInicio",
-  components: { DosColumnas, Plantilla, CajaSombreada, Bar, ListaDeGastosConFiltro },
+  components: { DosColumnas, Plantilla, CajaSombreada, ListaDeGastosConFiltro, Pie },
   setup() {
     let categorias = ref([]);
     let ultimosGastos = ref([]);
     let totalGastosMensual = ref(0);
     let gastoEnLaSemana = ref(0);
     let ingresoMensual = ref(0);
-    let saldo = ref(0)
+    let saldo = ref(0);
+
+    let datosDeGrafica = ref({
+      labels: categorias.value,
+      datasets: [{
+        label: 'Por categoría',
+        data: [],
+        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#F3A833'],
+      }],
+    });
+
 
     onMounted(() => {
       async function rellenarDatos() {
@@ -116,8 +126,24 @@ export default {
 
         ingresoMensual.value = await obtenerIngresoMensual();
 
-        saldo.value =  ingresoMensual.value  - totalGastosMensual.value;
-        saldo.value = saldo.value.toFixed(2)
+        saldo.value = ingresoMensual.value - totalGastosMensual.value;
+        saldo.value = saldo.value.toFixed(2);
+
+        // Actualizar los datos de la gráfica con los datos de los gastos por categoría
+        const gastosPorCategoria = datosCategorias.map(categoria => {
+          const gastosCategoria = datosGastos.filter(gasto => gasto.categoria === categoria.nombre);
+          return gastosCategoria.reduce((total, gasto) => total + Number(gasto.importe), 0);
+        });
+
+        // Actualizar los datos de la gráfica
+        datosDeGrafica.value = {
+          labels: categorias.value,
+          datasets: [{
+            label: 'Por categoría',
+            data: gastosPorCategoria,
+            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#F3A833'],
+          }],
+        };
       }
 
       rellenarDatos();
@@ -132,26 +158,9 @@ export default {
       gastoEnLaSemana: gastoEnLaSemana,
       saldo: saldo,
       ingresoMensual: ingresoMensual,
-      datosGrafica: {
-        labels: categorias.value,
-        datasets: [{
-          label: 'Por categoría',
-          data: [30, 10, 20, 10, 20],
-          backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#F3A833'],
-        }],
-      },
+      datosGrafica: datosDeGrafica,
       opcionesDeGrafica: {
         responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function (value) {
-                return '€' + value;
-              }
-            }
-          }
-        },
         plugins: {
           legend: {
             display: true,
@@ -160,7 +169,7 @@ export default {
           tooltip: {
             callbacks: {
               label: function (tooltipItem) {
-                return '€' + tooltipItem.raw;
+                return '€' + tooltipItem.raw; // Esto sigue mostrando el valor en el tooltip
               }
             }
           }
