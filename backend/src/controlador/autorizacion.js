@@ -13,7 +13,7 @@ async function crearToken(peticion, respuesta) {
         respuesta.status(401).send({ error: 'Usuario o contraseña incorrecta '})
     }else if (desencriptar(usuario.contrasena) == datos.contrasena) {
         let token = jwt.sign(usuario, secreto, { expiresIn: '3h'});
-        respuesta.status(200).send({ token: token });
+        respuesta.status(200).send({ token: token, usuario });
     }else {
         respuesta.status(401).send({ error: 'Datos invalidso.'})
     }
