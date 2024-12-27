@@ -35,7 +35,9 @@ export default {
       if(respuesta.error) {
         mensajeDeError.value = respuesta.error;
       }else {
-        localStorage.setItem('tokenDeSeguridad', respuesta.token)
+        console.log(respuesta);
+        sessionStorage.setItem('tokenDeSeguridad', respuesta.token)
+        sessionStorage.setItem('usuario', JSON.stringify(respuesta.usuario))
         router.push({ name: 'inicio' })
       }
     }

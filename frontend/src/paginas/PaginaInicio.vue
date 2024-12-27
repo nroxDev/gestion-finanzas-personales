@@ -32,18 +32,17 @@
                   <p class="importe">€{{ saldo }}</p>
                 </CajaSombreada>
 
-
                 <CajaSombreada clase="tipos">
                   <div class="descripcion-tipos">
                     <i class="fas fa-arrow-up icono-tipo"></i>
                     <p class="descripcion">Ingreso Mensual</p>
                   </div>
-                  <p class="importe">€{{ saldo }}</p>
+                  <p class="importe">€{{ ingresoMensual }}</p>
                 </CajaSombreada>
               </div>
             </div>
 
-            <div class="grafica-gastos-por-categiria">
+            <div class="grafica-gastos-por-categoria">
               <h2 class="subtitulo">Análisis de gastos mensual</h2>
               <CajaSombreada>
                 <Bar :data="datosGrafica" :options="opcionesDeGrafica" />
@@ -55,142 +54,117 @@
         <template #columna-derecha>
           <h2 class="subtitulo">Últimos Gastos del mes</h2>
           <ListaDeGastosConFiltro :categorias="categorias" :gastos="ultimosGastos" />
-
         </template>
       </DosColumnas>
-
     </template>
   </Plantilla>
 </template>
 
 <script>
+import { obtenerCategorias, obtenerGastos, obtenerIngresoMensual } from '@/api';
 import CajaSombreada from '@/components/CajaSombreada.vue';
 import DosColumnas from '@/components/DosColumnas.vue';
 import ListaDeGastosConFiltro from '@/components/ListaDeGastosConFiltro.vue';
 import Plantilla from '@/components/PaginaPlantilla.vue';
-ListaDeGastosConFiltro
-DosColumnas
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale
-} from 'chart.js'
-import { Bar } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import { onMounted, ref } from 'vue';
+import { Bar } from 'vue-chartjs';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default {
   name: "PaginaInicio",
   components: { DosColumnas, Plantilla, CajaSombreada, Bar, ListaDeGastosConFiltro },
   setup() {
+    let categorias = ref([]);
+    let ultimosGastos = ref([]);
+    let totalGastosMensual = ref(0);
+    let gastoEnLaSemana = ref(0);
+    let ingresoMensual = ref(0);
+    let saldo = ref(0)
+
+    onMounted(() => {
+      async function rellenarDatos() {
+        const datosCategorias = await obtenerCategorias();
+        const datosGastos = await obtenerGastos();
+
+        categorias.value = datosCategorias.map(function (categoria) { return categoria.nombre });
+
+        ultimosGastos.value = datosGastos.filter(gasto => {
+          const ahora = new Date();
+          const mesActual = ahora.getMonth();
+          const anioActual = ahora.getFullYear();
+          const fechaGasto = new Date(gasto.fecha);
+          return fechaGasto.getMonth() === mesActual && fechaGasto.getFullYear() === anioActual;
+        });
+
+        let gastosDelaSemana = datosGastos.filter(gasto => {
+          const ahora = new Date();
+          const inicioDeLaSemana = new Date(ahora);
+          inicioDeLaSemana.setDate(ahora.getDate() - ahora.getDay()); // Ajusta el día actual al domingo
+          const finDeLaSemana = new Date(inicioDeLaSemana);
+          finDeLaSemana.setDate(inicioDeLaSemana.getDate() + 6); // Suma 6 días al domingo
+          const fechaGasto = new Date(gasto.fecha);
+          return fechaGasto >= inicioDeLaSemana && fechaGasto <= finDeLaSemana;
+        });
+
+        let sumaGastosDeLaSemana = gastosDelaSemana.reduce((acc, gasto) => acc + Number(gasto.importe), 0);
+
+        totalGastosMensual.value = ultimosGastos.value.reduce((acc, gasto) => acc + Number(gasto.importe), 0);
+
+        gastoEnLaSemana.value = sumaGastosDeLaSemana;
+
+        ingresoMensual.value = await obtenerIngresoMensual();
+
+        saldo.value =  ingresoMensual.value  - totalGastosMensual.value;
+        saldo.value = saldo.value.toFixed(2)
+      }
+
+      rellenarDatos();
+
+    })
+
+
     return {
-      categorias: ["Todas", "Casa", "Mascotas", "Coche"],
-      ultimosGastos: [
-        {
-          "id": 1,
-          "titulo": "Compra supermercado",
-          "importe": 45.20,
-          "fecha": "2024-01-20T14:30:00Z",
-          "categoria": "Casa",
-          "descripcion": "Compra de alimentos y productos de limpieza",
-          "icono": "fas fa-shopping-cart"
-        },
-        {
-          "id": 2,
-          "titulo": "Pago alquiler",
-          "importe": 700.00,
-          "fecha": "2024-01-01T10:00:00Z",
-          "categoria": "Vivienda",
-          "descripcion": "Pago mensual del alquiler",
-          "icono": "fas fa-home"
-        },
-        {
-          "id": 3,
-          "titulo": "Pago teléfono",
-          "importe": 50.00,
-          "fecha": "2024-01-05T12:00:00Z",
-          "categoria": "Servicios",
-          "descripcion": "Pago mensual de la factura del teléfono móvil",
-          "icono": "fas fa-phone"
-        },
-        {
-          "id": 4,
-          "titulo": "Compra ropa",
-          "importe": 120.00,
-          "fecha": "2024-01-10T15:00:00Z",
-          "categoria": "Ropa",
-          "descripcion": "Compra de ropa de invierno",
-          "icono": "fas fa-tshirt"
-        },
-        {
-          "id": 5,
-          "titulo": "Pago gimnasio",
-          "importe": 40.00,
-          "fecha": "2024-01-15T09:00:00Z",
-          "categoria": "Salud",
-          "descripcion": "Suscripción mensual al gimnasio",
-          "icono": "fas fa-dumbbell"
-        },
-        {
-          "id": 6,
-          "titulo": "Gasolina",
-          "importe": 60.00,
-          "fecha": "2024-01-18T08:00:00Z",
-          "categoria": "Transporte",
-          "descripcion": "Llenado del tanque de gasolina",
-          "icono": "fas fa-gas-pump"
-        },
-        {
-          "id": 7,
-          "titulo": "Pago internet",
-          "importe": 40.00,
-          "fecha": "2024-01-10T11:00:00Z",
-          "categoria": "Servicios",
-          "descripcion": "Pago mensual de la factura de internet",
-          "icono": "fas fa-wifi"
-        },
-        {
-          "id": 8,
-          "titulo": "Cine",
-          "importe": 30.00,
-          "fecha": "2024-01-12T20:00:00Z",
-          "categoria": "Ocio",
-          "descripcion": "Entradas para el cine",
-          "icono": "fas fa-film"
-        },
-        {
-          "id": 9,
-          "titulo": "Compra tecnología",
-          "importe": 200.00,
-          "fecha": "2024-01-17T17:00:00Z",
-          "categoria": "Tecnología",
-          "descripcion": "Compra de un dispositivo móvil",
-          "icono": "fas fa-laptop"
-        },
-        {
-          "id": 10,
-          "titulo": "Comida para llevar",
-          "importe": 25.00,
-          "fecha": "2024-01-19T18:00:00Z",
-          "categoria": "Alimentación",
-          "descripcion": "Pedido de comida a domicilio",
-          "icono": "fas fa-utensils"
-        }
-      ],
-      totalGastos: 500.25,
-      gastoEnLaSemana: 200.01,
-      saldo: 1350.01,
-      ingresoMensual: 2000.12,
+      categorias: categorias,
+      ultimosGastos: ultimosGastos,
+      totalGastos: totalGastosMensual,
+      gastoEnLaSemana: gastoEnLaSemana,
+      saldo: saldo,
+      ingresoMensual: ingresoMensual,
       datosGrafica: {
-        labels: ['Hipoteca', 'Casa', 'Compra', 'Mascotas', 'Suministros'],
-        datasets: [{ label: 'Por categoría', data: [30, 10, 20, 10, 20] }],
+        labels: categorias.value,
+        datasets: [{
+          label: 'Por categoría',
+          data: [30, 10, 20, 10, 20],
+          backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#F3A833'],
+        }],
       },
       opcionesDeGrafica: {
-        responsive: true
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return '€' + value;
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+          },
+          tooltip: {
+            callbacks: {
+              label: function (tooltipItem) {
+                return '€' + tooltipItem.raw;
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -248,5 +222,9 @@ export default {
 .descripcion-tipos {
   display: flex;
   flex-direction: row;
+}
+
+.grafica-gastos-por-categoria {
+  margin-top: 20px;
 }
 </style>
