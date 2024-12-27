@@ -23,7 +23,7 @@
               <td>{{ gasto.descripcion }}</td>
               <td>{{ gasto.categoria }}</td>
               <td>
-                <button @click="eliminarGasto(gasto.id)" class="btn-eliminar">
+                <button @click="eliminarGasto(gasto.gasto_id)" class="btn-eliminar">
                   <i class="fas fa-trash"></i>
                 </button>
                 <button @click="editarGasto(gasto)" class="btn-editar">
@@ -41,18 +41,18 @@
             <form @submit.prevent="guardarGasto">
               <label for="fecha">Fecha</label>
               <input type="date" v-model="gastoForm.fecha" required />
-              
+
               <label for="importe">Importe (€)</label>
               <input v-model="gastoForm.importe" required />
-              
+
               <label for="descripcion">Descripción</label>
               <input type="text" v-model="gastoForm.descripcion" required />
-              
+
               <label for="categoria">Categoría</label>
               <select v-model="gastoForm.categoria" required>
                 <option v-for="categoria in categorias" :key="categoria" :value="categoria">{{ categoria }}</option>
               </select>
-              
+
               <div class="modal-buttons">
                 <button type="submit" class="btn-guardar">Guardar</button>
                 <button type="button" @click="cerrarModal" class="btn-cancelar">Cancelar</button>
@@ -66,35 +66,21 @@
 </template>
 
 <script>
+import { crearGasto, obtenerCategorias, obtenerGastos, actualizarGasto, borrarGasto } from '@/api';
 import BotonFormulario from '@/components/BotonFormulario.vue';
 import Plantilla from '@/components/PaginaPlantilla.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 export default {
   name: "PaginaGastos",
   components: { Plantilla, BotonFormulario },
   setup() {
     // Lista de categorías
-    const categorias = ref([
-      "Casa",
-      "Supermercado",
-      "Transporte",
-      "Entretenimiento",
-      "Salud"
-    ]);
+    const categorias = ref([]);
 
-    const gastos = ref([
-      {
-        id: 1,
-        titulo: "Compra supermercado",
-        importe: 45.20,
-        fecha: "2024-01-20T14:30:00Z",
-        categoria: "Casa",
-        descripcion: "Compra de alimentos y productos de limpieza",
-        icono: "fas fa-shopping-cart"
-      },
-      // (Resto de los gastos...)
-    ]);
+    const gastos = ref([]);
+
+    const datosCategorias = ref([]);
 
     const modalVisible = ref(false);
     const esEdicion = ref(false);
@@ -106,9 +92,10 @@ export default {
       categoria: ''
     });
 
-    const eliminarGasto = (id) => {
-      gastos.value = gastos.value.filter(gasto => gasto.id !== id);
-    };
+    async function eliminarGasto (id){
+      await borrarGasto(id);
+      gastos.value = gastos.value.filter(function (gasto) { return gasto.gasto_id !== id });
+    }
 
     const abrirModal = () => {
       modalVisible.value = true;
@@ -122,45 +109,84 @@ export default {
       };
     };
 
-    const editarGasto = (gasto) => {
+    function editarGasto(gasto) {
       modalVisible.value = true;
       esEdicion.value = true;
       gastoForm.value = { ...gasto };
-      
-      // Convertir la fecha al formato adecuado para el input tipo date
       gastoForm.value.fecha = new Date(gasto.fecha).toISOString().split('T')[0];
-    };
+    }
 
     const cerrarModal = () => {
       modalVisible.value = false;
     };
 
-    const guardarGasto = () => {
+    const guardarGasto = async () => {
       if (esEdicion.value) {
         // Editar el gasto
         const index = gastos.value.findIndex(g => g.id === gastoForm.value.id);
         if (index !== -1) {
           gastos.value[index] = { ...gastoForm.value };
         }
+        let idCategoria = datosCategorias.value.find(categoria => categoria.nombre === gastoForm.value.categoria).id
+
+        await actualizarGasto(
+          gastoForm.value.gasto_id,
+          Number(gastoForm.value.importe),
+          gastoForm.value.descripcion,
+          gastoForm.value.fecha,
+          idCategoria
+        )
       } else {
         // Crear un nuevo gasto
-        gastoForm.value.id = Date.now();
+        let idCategoria = datosCategorias.value.find(categoria => categoria.nombre === gastoForm.value.categoria).id
+
+       const gastoRespuesta =  await crearGasto(
+          gastoForm.value.importe,
+          gastoForm.value.descripcion,
+          gastoForm.value.fecha,
+          idCategoria
+        );
+
+        gastoForm.value.id = gastoRespuesta.insertId;
+
         gastos.value.push({ ...gastoForm.value });
       }
       cerrarModal();
     };
 
-    return { 
-      categorias, 
-      gastos, 
-      eliminarGasto, 
-      abrirModal, 
-      editarGasto, 
-      modalVisible, 
-      cerrarModal, 
-      gastoForm, 
-      esEdicion, 
-      guardarGasto 
+    onMounted(function () {
+      async function cargarDatos() {
+        let datosGastos = await obtenerGastos();
+        datosCategorias.value = await obtenerCategorias();
+
+        datosGastos.sort(function (a, b) {
+          const fechaA = new Date(a.fecha);
+          const fechaB = new Date(b.fecha);
+          return fechaB - fechaA;
+        });
+
+
+
+        gastos.value = datosGastos;
+
+        categorias.value = datosCategorias.value.map(function (categoria) { return categoria.nombre });
+
+      }
+
+      cargarDatos();
+    })
+
+    return {
+      categorias,
+      gastos,
+      eliminarGasto,
+      abrirModal,
+      editarGasto,
+      modalVisible,
+      cerrarModal,
+      gastoForm,
+      esEdicion,
+      guardarGasto
     };
   }
 };
