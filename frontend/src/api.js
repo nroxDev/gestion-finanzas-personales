@@ -116,3 +116,63 @@ export async function borrarGasto(idGasto) {
     const datos = await response.json();
     return datos;
 }
+
+export async function borrarCategoria(id) {
+    let token = obtenerTokenDeSeguridad();
+
+    const response = await fetch(`http://localhost:2000/categorias/${id}`, {
+        method: 'DELETE',
+        headers: {
+            "Authorization": token,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const datos = await response.json();
+    return datos;
+}
+
+
+export async function actualizarCategoria(id, nombre, icono) {
+    let token = obtenerTokenDeSeguridad();
+    let usuario = obtenerUsuario();
+
+
+    const response = await fetch("http://localhost:2000/categorias", {
+        method: 'PUT',
+        headers: {
+            "Authorization": token,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: id, 
+            nombre: nombre, 
+            icono: icono, 
+            fkIdUsuario: usuario.id
+        }),
+    });
+
+    const datos = await response.json();
+    return datos;
+}
+
+export async function crearCategoria(nombre, icono) {
+    let usuario = obtenerUsuario();
+    let token = obtenerTokenDeSeguridad();
+
+    const response = await fetch('http://localhost:2000/categorias', {
+        method: 'POST',
+        headers: {
+            "Authorization": token,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            nombre: nombre, 
+            icono: icono, 
+            fkIdUsuario: usuario.id, 
+        }),
+    });
+
+    const datos = await response.json();
+    return datos;
+}

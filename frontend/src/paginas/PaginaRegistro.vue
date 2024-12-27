@@ -17,9 +17,6 @@ export default {
         let router = useRouter();
 
         async function enviar(datos) {
-            console.log('datos', datos);
-
-
             let peticion = await fetch('http://localhost:2000/usuarios', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

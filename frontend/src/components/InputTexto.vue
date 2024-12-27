@@ -62,7 +62,6 @@ export default {
         }
     },
     setup: function (props, { emit }) {
-        console.log(props)
         let tieneError = ref(false)
 
         function validar(evento) {

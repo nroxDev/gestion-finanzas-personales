@@ -21,8 +21,6 @@ export default {
 
 
     async function entrar(datos) {
-      console.log(datos);
-
       let peticion = await fetch('http://localhost:2000/autorizacion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -35,7 +33,6 @@ export default {
       if(respuesta.error) {
         mensajeDeError.value = respuesta.error;
       }else {
-        console.log(respuesta);
         localStorage.setItem('tokenDeSeguridad', respuesta.token)
         localStorage.setItem('usuario', JSON.stringify(respuesta.usuario))
         router.push({ name: 'inicio' })

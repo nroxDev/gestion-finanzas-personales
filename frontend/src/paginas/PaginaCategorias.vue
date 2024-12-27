@@ -33,12 +33,8 @@
 
               <label for="icono">Seleccionar Icono</label>
               <div class="iconos-grid">
-                <div 
-                  v-for="icono in iconosDisponibles" 
-                  :key="icono" 
-                  class="icono-selector"
-                  :class="{'selected': categoriaForm.icono === icono}"
-                  @click="categoriaForm.icono = icono">
+                <div v-for="icono in iconosDisponibles" :key="icono" class="icono-selector"
+                  :class="{ 'selected': categoriaForm.icono === icono }" @click="categoriaForm.icono = icono">
                   <i :class="icono" class="icono"></i>
                 </div>
               </div>
@@ -56,9 +52,10 @@
 </template>
 
 <script>
+import { actualizarCategoria, borrarCategoria, crearCategoria, obtenerCategorias } from '@/api';
 import BotonFormulario from '@/components/BotonFormulario.vue';
 import Plantilla from '@/components/PaginaPlantilla.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 export default {
   name: "PaginaCategorias",
@@ -66,23 +63,17 @@ export default {
   setup() {
     // Lista de iconos disponibles (FontAwesome)
     const iconosDisponibles = ref([
-  'fas fa-home', 'fas fa-shopping-cart', 'fas fa-car', 'fas fa-film', 'fas fa-heartbeat',
-  'fas fa-laptop', 'fas fa-bicycle', 'fas fa-users', 'fas fa-utensils', 'fas fa-sun',
-  'fas fa-plane', 'fas fa-cogs', 'fas fa-archive', 'fas fa-paint-brush', 'fas fa-apple-alt',
-  'fas fa-mobile-alt', 'fas fa-cloud', 'fas fa-tree', 'fas fa-dumbbell', 'fas fa-book',
-  'fas fa-bed', 'fas fa-briefcase', 'fas fa-coffee', 'fas fa-headphones', 'fas fa-glass-martini',
-  'fas fa-lightbulb', 'fas fa-trophy', 'fas fa-calendar-alt', 'fas fa-pencil-alt', 'fas fa-map-marker-alt',
-  'fas fa-clock', 'fas fa-credit-card', 'fas fa-luggage-cart', 'fas fa-wifi', 'fas fa-search'
-])
+      'fas fa-home', 'fas fa-shopping-cart', 'fas fa-car', 'fas fa-film', 'fas fa-heartbeat',
+      'fas fa-laptop', 'fas fa-bicycle', 'fas fa-users', 'fas fa-utensils', 'fas fa-sun',
+      'fas fa-plane', 'fas fa-cogs', 'fas fa-archive', 'fas fa-paint-brush', 'fas fa-apple-alt',
+      'fas fa-mobile-alt', 'fas fa-cloud', 'fas fa-tree', 'fas fa-dumbbell', 'fas fa-book',
+      'fas fa-bed', 'fas fa-briefcase', 'fas fa-coffee', 'fas fa-headphones', 'fas fa-glass-martini',
+      'fas fa-lightbulb', 'fas fa-trophy', 'fas fa-calendar-alt', 'fas fa-pencil-alt', 'fas fa-map-marker-alt',
+      'fas fa-clock', 'fas fa-credit-card', 'fas fa-luggage-cart', 'fas fa-wifi', 'fas fa-search'
+    ])
 
     // Lista de categorías con nombre, icono y id
-    const categorias = ref([
-      { id: 1, nombre: "Casa", icono: "fas fa-home" },
-      { id: 2, nombre: "Supermercado", icono: "fas fa-shopping-cart" },
-      { id: 3, nombre: "Transporte", icono: "fas fa-car" },
-      { id: 4, nombre: "Entretenimiento", icono: "fas fa-film" },
-      { id: 5, nombre: "Salud", icono: "fas fa-heartbeat" }
-    ]);
+    const categorias = ref([]);
 
     const modalVisible = ref(false);
     const esEdicion = ref(false);
@@ -92,9 +83,10 @@ export default {
       icono: ''
     });
 
-    const eliminarCategoria = (id) => {
+    async function eliminarCategoria(id) {
+      await borrarCategoria(id);
       categorias.value = categorias.value.filter(categoria => categoria.id !== id);
-    };
+    }
 
     const abrirModal = () => {
       modalVisible.value = true;
@@ -116,32 +108,52 @@ export default {
       modalVisible.value = false;
     };
 
-    const guardarCategoria = () => {
+    async function guardarCategoria() {
       if (esEdicion.value) {
         // Editar categoría
         const index = categorias.value.findIndex(c => c.id === categoriaForm.value.id);
         if (index !== -1) {
+          await actualizarCategoria(
+            categoriaForm.value.id,
+            categoriaForm.value.nombre,
+            categoriaForm.value.icono,
+          )
+
           categorias.value[index] = { ...categoriaForm.value };
         }
+
+
       } else {
-        // Crear nueva categoría
-        categoriaForm.value.id = Date.now();
+        const respuesta = await crearCategoria(categoriaForm.value.nombre, categoriaForm.value.icono);
+        console.log(respuesta)
+        categoriaForm.value.id = respuesta.insertId;
         categorias.value.push({ ...categoriaForm.value });
       }
       cerrarModal();
-    };
+    }
 
-    return { 
-      categorias, 
-      eliminarCategoria, 
-      abrirModal, 
-      editarCategoria, 
-      modalVisible, 
-      cerrarModal, 
-      categoriaForm, 
-      esEdicion, 
-      guardarCategoria, 
-      iconosDisponibles 
+    onMounted(function () {
+      async function cargarDatos() {
+
+        let categoriaDatos = await obtenerCategorias();
+        categorias.value = categoriaDatos;
+
+      }
+
+      cargarDatos();
+    })
+
+    return {
+      categorias,
+      eliminarCategoria,
+      abrirModal,
+      editarCategoria,
+      modalVisible,
+      cerrarModal,
+      categoriaForm,
+      esEdicion,
+      guardarCategoria,
+      iconosDisponibles
     };
   }
 };
@@ -206,7 +218,7 @@ export default {
 .categoria-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
+  margin: 15px;
 }
 
 .btn-editar,
@@ -214,7 +226,7 @@ export default {
   background-color: transparent;
   border: 1px solid #d40100;
   color: #d40100;
-  padding: 8px 16px;
+  padding: 8px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;

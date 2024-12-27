@@ -53,7 +53,7 @@
 
         <template #columna-derecha>
           <h2 class="subtitulo">Últimos Gastos del mes</h2>
-          <ListaDeGastosConFiltro :categorias="categorias" :gastos="ultimosGastos" />
+          <ListaDeGastosConFiltro :categorias="categoriasFiltros" :gastos="ultimosGastos" />
         </template>
       </DosColumnas>
     </template>
@@ -82,6 +82,7 @@ export default {
     let gastoEnLaSemana = ref(0);
     let ingresoMensual = ref(0);
     let saldo = ref(0);
+    let categoriasFiltros = ref([]);
 
     let datosDeGrafica = ref({
       labels: categorias.value,
@@ -99,6 +100,8 @@ export default {
         const datosGastos = await obtenerGastos();
 
         categorias.value = datosCategorias.map(function (categoria) { return categoria.nombre });
+
+        categoriasFiltros.value = ["Todas", ...categorias.value];
 
         ultimosGastos.value = datosGastos.filter(gasto => {
           const ahora = new Date();
@@ -120,7 +123,7 @@ export default {
 
         let sumaGastosDeLaSemana = gastosDelaSemana.reduce((acc, gasto) => acc + Number(gasto.importe), 0);
 
-        totalGastosMensual.value = ultimosGastos.value.reduce((acc, gasto) => acc + Number(gasto.importe), 0);
+        totalGastosMensual.value = ultimosGastos.value.reduce((acc, gasto) => acc + Number(gasto.importe), 0).toFixed(2);
 
         gastoEnLaSemana.value = sumaGastosDeLaSemana;
 
@@ -158,6 +161,7 @@ export default {
       gastoEnLaSemana: gastoEnLaSemana,
       saldo: saldo,
       ingresoMensual: ingresoMensual,
+      categoriasFiltros: categoriasFiltros,
       datosGrafica: datosDeGrafica,
       opcionesDeGrafica: {
         responsive: true,
