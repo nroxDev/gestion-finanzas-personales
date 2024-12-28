@@ -1,3 +1,5 @@
+DROP DATABASE finanzas_personales;
+
 -- Crear la base de datos con conjunto de caracteres UTF-8
 CREATE DATABASE IF NOT EXISTS finanzas_personales
     CHARACTER SET utf8

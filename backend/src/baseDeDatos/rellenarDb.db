@@ -1,0 +1,158 @@
+-- Crear usuario
+INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, fecha_nacimiento, correo_electronico, sexo, contrasena)
+VALUES
+('Roxana', 'Aguilera', NULL, '1997-08-10', 'nolvia.roxana.aguilera@gmail.com', 'F', '554c6ac68fbe343c860f6f2a726adb61:e097e470fd7c91521d896cc08d7c88ca');
+
+-- Insertar categorías con los iconos correspondientes
+INSERT INTO categorias (nombre, icono, fk_id_usuario) 
+VALUES 
+('Alquiler', 'fas fa-home', 1),
+('Comida', 'fas fa-utensils', 1),
+('Transporte', 'fas fa-car', 1),
+('Ocio', 'fas fa-film', 1);
+
+-- Gastos aleatorios
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertarGastosAleatorios()
+BEGIN
+    -- Declaración de variables
+    DECLARE dia INT;
+    DECLARE mes INT DEFAULT 1;
+    DECLARE año INT DEFAULT 2021;
+    DECLARE fecha DATE;
+    DECLARE descripcion VARCHAR(255);
+    DECLARE importe DECIMAL(10,2);
+    DECLARE categoria_id INT;
+    DECLARE total_mes DECIMAL(10,2);
+    DECLARE max_dia INT;
+    DECLARE max_gasto_mes DECIMAL(10,2);
+    DECLARE fecha_actual DATE;
+    
+    -- Lista de descripciones de gastos ampliada
+    DECLARE descripcion1 VARCHAR(255) DEFAULT 'Pago de alquiler mensual';
+    DECLARE descripcion2 VARCHAR(255) DEFAULT 'Cena con amigos';
+    DECLARE descripcion3 VARCHAR(255) DEFAULT 'Almuerzo en el trabajo';
+    DECLARE descripcion4 VARCHAR(255) DEFAULT 'Gasolina para coche';
+    DECLARE descripcion5 VARCHAR(255) DEFAULT 'Supermercado (productos básicos)';
+    DECLARE descripcion6 VARCHAR(255) DEFAULT 'Billete de tren';
+    DECLARE descripcion7 VARCHAR(255) DEFAULT 'Compra de ropa';
+    DECLARE descripcion8 VARCHAR(255) DEFAULT 'Alquiler de bicicleta';
+    DECLARE descripcion9 VARCHAR(255) DEFAULT 'Pago de internet';
+    DECLARE descripcion10 VARCHAR(255) DEFAULT 'Cena rápida';
+    DECLARE descripcion11 VARCHAR(255) DEFAULT 'Taxi al aeropuerto';
+    DECLARE descripcion12 VARCHAR(255) DEFAULT 'Estacionamiento en el centro comercial';
+    DECLARE descripcion13 VARCHAR(255) DEFAULT 'Visita al cine';
+    DECLARE descripcion14 VARCHAR(255) DEFAULT 'Suscripción a plataforma de streaming';
+    DECLARE descripcion15 VARCHAR(255) DEFAULT 'Compra de medicamentos';
+    DECLARE descripcion16 VARCHAR(255) DEFAULT 'Pago de gimnasio';
+    DECLARE descripcion17 VARCHAR(255) DEFAULT 'Recarga de móvil';
+    DECLARE descripcion18 VARCHAR(255) DEFAULT 'Pago de seguro del coche';
+    DECLARE descripcion19 VARCHAR(255) DEFAULT 'Mantenimiento del coche';
+    DECLARE descripcion20 VARCHAR(255) DEFAULT 'Compra de regalos para cumpleaños';
+    DECLARE descripcion21 VARCHAR(255) DEFAULT 'Compra de entradas para evento';
+    
+    -- Obtener la fecha actual para generar los gastos desde este día
+    SET fecha_actual = CURDATE();
+    
+    -- Inicialización del total mensual
+    SET total_mes = 0;
+    
+    -- Recorremos los años desde 2021 hasta el año actual
+    WHILE año <= YEAR(fecha_actual) DO
+        -- Recorremos los meses de enero a diciembre
+        SET mes = 1;
+        WHILE mes <= 12 DO
+            -- Calcular el número máximo de días del mes
+            SET max_dia = DAY(LAST_DAY(CONCAT(año, '-', LPAD(mes, 2, '0'), '-01')));
+            
+            -- Establecer un límite mensual ajustado con variación
+            SET max_gasto_mes = ROUND(1500 + (RAND() * 200 - 100), 2); -- Límite entre 1400 y 1600
+            
+            -- Recorremos los días de cada mes
+            SET dia = 1;
+            SET total_mes = 0;
+            
+            -- Si el año es el actual, se ajustan los días para no exceder la fecha actual
+            IF año = YEAR(fecha_actual) AND mes = MONTH(fecha_actual) THEN
+                SET max_dia = DAY(fecha_actual); -- Ajustar el máximo de días al día actual
+            END IF;
+            
+            -- Ajustamos la fecha y el total mensual
+            WHILE dia <= max_dia DO
+                SET fecha = CONCAT(año, '-', LPAD(mes, 2, '0'), '-', LPAD(dia, 2, '0'));
+                
+                -- Se eligen aleatoriamente 3 gastos por día
+                SET categoria_id = 1;
+                
+                -- Recorremos las 4 categorías
+                WHILE categoria_id <= 4 DO
+                    -- Selección aleatoria de descripción y valor de gasto
+                    SET descripcion = CASE
+                        WHEN categoria_id = 1 THEN
+                            CASE FLOOR(1 + (RAND() * 7)) -- Ampliamos el rango de opciones
+                                WHEN 1 THEN descripcion1 -- Alquiler
+                                WHEN 2 THEN descripcion7 -- Ropa
+                                WHEN 3 THEN descripcion9 -- Internet
+                                WHEN 4 THEN descripcion13 -- Cine
+                                WHEN 5 THEN descripcion14 -- Streaming
+                                WHEN 6 THEN descripcion20 -- Regalos
+                                WHEN 7 THEN descripcion18 -- Seguro coche
+                            END
+                        WHEN categoria_id = 2 THEN
+                            CASE FLOOR(1 + (RAND() * 7)) -- Ampliamos el rango de opciones
+                                WHEN 1 THEN descripcion2 -- Cena
+                                WHEN 2 THEN descripcion3 -- Almuerzo
+                                WHEN 3 THEN descripcion10 -- Comida rápida
+                                WHEN 4 THEN descripcion15 -- Medicamentos
+                                WHEN 5 THEN descripcion16 -- Gimnasio
+                                WHEN 6 THEN descripcion19 -- Mantenimiento coche
+                                WHEN 7 THEN descripcion21 -- Entradas evento
+                            END
+                        WHEN categoria_id = 3 THEN
+                            CASE FLOOR(1 + (RAND() * 6)) -- Ampliamos el rango de opciones
+                                WHEN 1 THEN descripcion4 -- Gasolina
+                                WHEN 2 THEN descripcion6 -- Billete de tren
+                                WHEN 3 THEN descripcion12 -- Estacionamiento
+                                WHEN 4 THEN descripcion17 -- Recarga móvil
+                                WHEN 5 THEN descripcion11 -- Taxi
+                                WHEN 6 THEN descripcion19 -- Mantenimiento coche
+                            END
+                        WHEN categoria_id = 4 THEN
+                            CASE FLOOR(1 + (RAND() * 5)) -- Ampliamos el rango de opciones
+                                WHEN 1 THEN descripcion5 -- Supermercado
+                                WHEN 2 THEN descripcion8 -- Bicicleta
+                                WHEN 3 THEN descripcion11 -- Taxi
+                                WHEN 4 THEN descripcion17 -- Recarga móvil
+                                WHEN 5 THEN descripcion18 -- Seguro coche
+                            END
+                    END;
+                    
+                    -- Gasto aleatorio entre 5 y 100 euros, incrementado por año
+                    SET importe = ROUND(RAND() * (100 + (año - 2021) * 10), 2); -- Aumento de 10 euros por año
+                    SET total_mes = total_mes + importe;
+                    
+                    -- Verificamos que el gasto total mensual no supere el límite ajustado
+                    IF total_mes <= max_gasto_mes THEN
+                        INSERT INTO gastos (descripcion, importe, fecha, fk_id_usuario, fk_id_categoria)
+                        VALUES (descripcion, importe, fecha, 1, categoria_id);
+                    END IF;
+                    
+                    SET categoria_id = categoria_id + 1;
+                END WHILE;
+                
+                SET dia = dia + 1;
+            END WHILE;
+            
+            SET mes = mes + 1;
+        END WHILE;
+        
+        SET año = año + 1;
+    END WHILE;
+
+END $$
+
+DELIMITER ;
+
+CALL InsertarGastosAleatorios();
