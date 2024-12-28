@@ -51,8 +51,13 @@ export async function obtenerGastos() {
 }
 
 export async function obtenerIngresoMensual() {
-    return 2500.00;
+    return Number(localStorage.getItem('ingresoMensual'));
 }
+
+export async function darIngresoMensual(importe) {
+    localStorage.setItem('ingresoMensual', Number(importe));
+}
+
 
 export async function crearGasto(importe, descripcion, fecha, fkIdCategoria) {
     let usuario = obtenerUsuario();

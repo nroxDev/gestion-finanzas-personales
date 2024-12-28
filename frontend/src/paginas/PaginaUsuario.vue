@@ -2,6 +2,18 @@
   <Plantilla>
     <template #contenido>
       <div class="contenedor">
+
+        <h1>Datos económicos</h1>
+
+        <form @submit.prevent="guardarDatosEconomicos" class="datos-economicos">
+          <label for="ingreso-mensual">Ingreso Mensual</label>
+          <input type="text" id="ingresoMensual" v-model="importe.ingresoMensual" class="formulario-control" required />
+          <button type="submit" class="enviar">
+            Guardar Cambios
+          </button>
+        </form>
+
+
         <h1 class="texto-centro">Datos de Usuario</h1>
         <div class="tarjeta">
           <form @submit.prevent="guardarUsuario">
@@ -98,7 +110,7 @@
 </template>
 
 <script>
-import { obtenerUsuario, actualizarUsuario } from "@/api";
+import { obtenerUsuario, actualizarUsuario, obtenerIngresoMensual, darIngresoMensual } from "@/api";
 import Plantilla from "@/components/PaginaPlantilla.vue";
 import { ref, onMounted, computed } from "vue";
 
@@ -116,6 +128,10 @@ export default {
       correo_electronico: "",
       contrasena: "",
     });
+
+    const importe = ref({
+      ingresoMensual: 0
+    })
 
     const mostrarCambioContrasena = ref(false);
 
@@ -151,6 +167,10 @@ export default {
       }
     };
 
+    async function guardarDatosEconomicos() {
+      await darIngresoMensual(importe.value.ingresoMensual);
+    }
+
     // Guardar los cambios del usuario
     const guardarUsuario = async () => {
       try {
@@ -168,7 +188,7 @@ export default {
 
         if (mostrarCambioContrasena.value) {
           datosCompletosDeUsuario.contrasena = cambioContrasena.value.nuevaContrasena;
-        } 
+        }
 
         const respuesta = await actualizarUsuario({
           id: usuarioGuardado.id,
@@ -196,17 +216,23 @@ export default {
     };
 
     onMounted(() => {
+      async function cargarDatos() {
+        importe.value.ingresoMensual = await obtenerIngresoMensual();
+      }
+      cargarDatos();
       cargarUsuario();
     });
 
     return {
       usuario,
+      importe,
       mostrarCambioContrasena,
       cambioContrasena,
       contrasenaNoCoincide,
       contrasenaValida,
       contrasenaPattern,
       guardarUsuario,
+      guardarDatosEconomicos,
     };
   },
 };
@@ -286,5 +312,13 @@ select.formulario-control {
   font-size: 16px;
   display: block;
   padding: 20px;
+}
+
+.datos-economicos {
+  display: flex;
+  flex-direction: column;
+  height: 143px;
+  align-items: center;
+  justify-content: space-around;
 }
 </style>

@@ -99,7 +99,6 @@ export default {
         const datosCategorias = await obtenerCategorias();
         const datosGastos = await obtenerGastos();
 
-        console.log(datosGastos)
 
         categorias.value = datosCategorias.map(function (categoria) { return categoria.nombre });
 
