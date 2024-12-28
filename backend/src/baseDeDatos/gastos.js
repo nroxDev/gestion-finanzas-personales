@@ -15,7 +15,8 @@ async function obtenerGastosDeUnUsuario(idUsuario) {
             gastos.fecha,
             gastos.fk_id_usuario,
             categorias.id AS categoria_id,
-            categorias.nombre AS categoria
+            categorias.nombre AS categoria,
+            categorias.icono AS icono
         FROM 
             gastos
         JOIN 

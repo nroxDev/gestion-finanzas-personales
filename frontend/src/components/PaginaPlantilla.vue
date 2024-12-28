@@ -68,7 +68,7 @@ export default {
 }
 
 .menu {
-  width: 25%;
+  width: 15%;
   background-color: #f2cece;
   padding: 1rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
