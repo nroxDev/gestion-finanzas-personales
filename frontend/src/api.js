@@ -2,7 +2,7 @@ export function obtenerUsuario() {
     const datos = localStorage.getItem('usuario');
 
     if (!datos) {
-        throw new Error('El usuario no existe');
+        return null;
     }
     const usuario = JSON.parse(datos);
     return usuario
@@ -214,4 +214,9 @@ export async function actualizarUsuario({ id,
     const datos = await response.json();
     return datos;
 
+}
+
+export async function borrarDatos() {
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('tokenDeSeguridad');
 }

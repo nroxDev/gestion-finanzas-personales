@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { borrarDatos } from "@/api";
 import BotonDeMenu from "@/components/BotonDeMenu.vue";
 import { useRouter } from 'vue-router';
 
@@ -45,6 +46,7 @@ export default {
     let router = useRouter();
 
     function salir() {
+      borrarDatos();
       router.push({ name: 'login' })
     }
 

@@ -6,6 +6,7 @@ import PaginaCategorias from '../paginas/PaginaCategorias.vue'
 import PaginaGastos from '../paginas/PaginaGastos.vue'
 import PaginaEstadisticas from '../paginas/PaginaEstadisticas.vue'
 import PaginaUsuario from '../paginas/PaginaUsuario.vue'
+import { obtenerUsuario } from '@/api'
 
 
 const routes = [
@@ -49,6 +50,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+
+router.beforeEach(async (to) => {
+  let usuario = obtenerUsuario();
+
+  if (!usuario && to.name === 'registro') {
+    return true;
+  }
+
+  if (!usuario && to.name !== 'login') {
+    return { name: 'login' }
+  }
+
+  return true;
+
 })
 
 export default router
