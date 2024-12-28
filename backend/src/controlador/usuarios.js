@@ -3,7 +3,6 @@ const usuarioValidaciones = require('../validaciones/usuarios');
 const seguridadUtilidades = require('../utilidades/seguridad');
 
 async function crearUsuario(peticion, respuesta) {
-    console.log('****************************************', peticion.body)
     let datos = peticion.body;
     let error = usuarioValidaciones.validarUsuario(datos);
 
@@ -36,10 +35,17 @@ async function obtenerUsuarioPorCorreo(peticion, respuesta) {
 async function actualizarUsuario(peticion, respuesta) {
     let datos = peticion.body;
     let error = usuarioValidaciones.validarUsuario(datos);
+    let usuarioEnDB = await usuariosModelo.obtenerUsuarioPorCorreo(datos.correo);
+
+    if(datos.contrasena !== usuarioEnDB.contrasena) {
+        datos.contrasena = seguridadUtilidades.encriptar(datos.contrasena);
+    }
+
 
     if (error == null) {
         let resultado = await usuariosModelo.actualizarUsuario(datos);
-        respuesta.status(200).send(resultado);
+        let usuarioActualizado = await usuariosModelo.obtenerUsuarioPorCorreo(datos.correo);
+        respuesta.status(200).send({ ok: true, usuario: usuarioActualizado });
     }
     else {
         respuesta.status(400).send({ error: error })

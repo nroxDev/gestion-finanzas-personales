@@ -65,10 +65,10 @@ export async function crearGasto(importe, descripcion, fecha, fkIdCategoria) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            descripcion, 
-            importe: Number(importe), 
-            fecha: fecha, 
-            fkIdUsuario: usuario.id, 
+            descripcion,
+            importe: Number(importe),
+            fecha: fecha,
+            fkIdUsuario: usuario.id,
             fkIdCategoria
         }),
     });
@@ -145,9 +145,9 @@ export async function actualizarCategoria(id, nombre, icono) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            id: id, 
-            nombre: nombre, 
-            icono: icono, 
+            id: id,
+            nombre: nombre,
+            icono: icono,
             fkIdUsuario: usuario.id
         }),
     });
@@ -167,12 +167,46 @@ export async function crearCategoria(nombre, icono) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            nombre: nombre, 
-            icono: icono, 
-            fkIdUsuario: usuario.id, 
+            nombre: nombre,
+            icono: icono,
+            fkIdUsuario: usuario.id,
         }),
     });
 
     const datos = await response.json();
     return datos;
+}
+
+export async function actualizarUsuario({ id,
+    nombre,
+    primerApellido,
+    segundoApellido,
+    fechaNacimiento,
+    sexo,
+    correo,
+    contrasena }) {
+    let token = obtenerTokenDeSeguridad();
+
+
+    const response = await fetch("http://localhost:2000/usuarios", {
+        method: 'PUT',
+        headers: {
+            "Authorization": token,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id,
+            nombre,
+            primerApellido,
+            segundoApellido,
+            fechaNacimiento,
+            sexo,
+            correo,
+            contrasena
+        })
+    });
+
+    const datos = await response.json();
+    return datos;
+
 }
