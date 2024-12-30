@@ -104,20 +104,29 @@
             </button>
           </form>
         </div>
+        <div class="baja">
+          <button type="submit" class="btn-baja" @click="elminarDatos">
+            ELIMINAR TODOS MIS DATOS
+          </button>
+
+        </div>
       </div>
     </template>
   </Plantilla>
 </template>
 
 <script>
-import { obtenerUsuario, actualizarUsuario, obtenerIngresoMensual, darIngresoMensual } from "@/api";
+import { obtenerUsuario, actualizarUsuario, obtenerIngresoMensual, darIngresoMensual, borrarUsuario, borrarDatos } from "@/api";
 import Plantilla from "@/components/PaginaPlantilla.vue";
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default {
   name: "PaginaUsuario",
   components: { Plantilla },
   setup() {
+    let router = useRouter();
+
     const usuario = ref({
       id: null,
       nombre: "",
@@ -215,6 +224,17 @@ export default {
       }
     };
 
+    async function elminarDatos () {
+      const confirmacion = confirm("¿Está seguro que desea darse de baja?");
+      if (confirmacion) {
+        await borrarUsuario();
+        borrarDatos();
+        router.push({ name: 'registro'})
+
+      }
+
+    }
+
     onMounted(() => {
       async function cargarDatos() {
         importe.value.ingresoMensual = await obtenerIngresoMensual();
@@ -233,6 +253,7 @@ export default {
       contrasenaPattern,
       guardarUsuario,
       guardarDatosEconomicos,
+      elminarDatos
     };
   },
 };
@@ -320,5 +341,24 @@ select.formulario-control {
   height: 143px;
   align-items: center;
   justify-content: space-around;
+}
+
+.btn-baja {
+  width: 100%;
+  border-radius: 24px;
+  background-color: red;
+  color: #fff;
+  height: 50px;
+  border: none;
+  cursor: pointer;
+
+}
+.baja {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 16px;
+  padding: 16px;
+
 }
 </style>

@@ -220,3 +220,19 @@ export async function borrarDatos() {
     localStorage.removeItem('usuario');
     localStorage.removeItem('tokenDeSeguridad');
 }
+
+export async function borrarUsuario() {
+    let token = obtenerTokenDeSeguridad();
+    let usuario = obtenerUsuario();
+
+    const response = await fetch(`http://localhost:2000/usuarios/${usuario.id}`, {
+        method: 'DELETE',
+        headers: {
+            "Authorization": token,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const datos = await response.json();
+    return datos;
+}
