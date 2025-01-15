@@ -149,7 +149,7 @@ export default {
 
         gastoForm.value.id = gastoRespuesta.insertId;
 
-        gastos.value.push({ ...gastoForm.value });
+        gastos.value.unshift({ ...gastoForm.value });
       }
       cerrarModal();
     };

@@ -27,7 +27,7 @@
                 <CajaSombreada clase="tipos">
                   <div class="descripcion-tipos">
                     <i class="fas fa-wallet icono-tipo"></i>
-                    <p class="descripcion">Saldo</p>
+                    <p class="descripcion">Saldo Actual</p>
                   </div>
                   <p class="importe">€{{ saldo }}</p>
                 </CajaSombreada>
@@ -43,7 +43,7 @@
             </div>
 
             <div class="grafica-gastos-por-categoria">
-              <h2 class="subtitulo">Análisis de gastos mensual</h2>
+              <h2 class="subtitulo">Gastos de este mes por categorías</h2>
               <CajaSombreada>
                 <Pie :data="datosGrafica" :options="opcionesDeGrafica" />
               </CajaSombreada>
@@ -110,7 +110,9 @@ export default {
           const anioActual = ahora.getFullYear();
           const fechaGasto = new Date(gasto.fecha);
           return fechaGasto.getMonth() === mesActual && fechaGasto.getFullYear() === anioActual;
-        });
+        }).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+        console.log('--------------',    typeof [ ...ultimosGastos.value][0].fecha)
 
         let gastosDelaSemana = datosGastos.filter(gasto => {
           const ahora = new Date();
@@ -123,7 +125,7 @@ export default {
         });
 
         let sumaGastosDeLaSemana = gastosDelaSemana.reduce((acc, gasto) => acc + Number(gasto.importe), 0);
-
+               
         totalGastosMensual.value = ultimosGastos.value.reduce((acc, gasto) => acc + Number(gasto.importe), 0).toFixed(2);
 
         gastoEnLaSemana.value = sumaGastosDeLaSemana;
@@ -135,9 +137,11 @@ export default {
 
         // Actualizar los datos de la gráfica con los datos de los gastos por categoría
         const gastosPorCategoria = datosCategorias.map(categoria => {
-          const gastosCategoria = datosGastos.filter(gasto => gasto.categoria === categoria.nombre);
+          const gastosCategoria = ultimosGastos.value.filter(gasto => gasto.categoria == categoria.nombre);
           return gastosCategoria.reduce((total, gasto) => total + Number(gasto.importe), 0);
-        });
+        })
+        .map(total => parseFloat(total.toFixed(2)));
+
 
         // Actualizar los datos de la gráfica
         datosDeGrafica.value = {

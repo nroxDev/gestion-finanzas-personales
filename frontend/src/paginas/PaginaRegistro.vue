@@ -48,6 +48,7 @@ export default {
     align-items: center;
     height: 100%;
     margin: 20px; 
+    overflow: scroll;
 }
 
 </style>
